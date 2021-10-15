@@ -39,3 +39,39 @@ def fiend_start_file():
             sorce_file = os.path.normpath(os.path.join(root, files[0]))
             # print(sorce_file)
     return sorce_file
+
+
+def parsing_sorce_file(sorce_file, orange_numbers):
+    local_file = {}
+    zone_file = []
+    mg_file = []
+    price_zone, price_mg = 0
+    # count_local, count_zone = 0, 0
+    with open(sorce_file, mode='r') as sorce_file:
+        for line in islice(sorce_file, 1, None):
+            _, _, auth, _, svc, terminat, _, country, zone, date_f, time, _, seconds, _, charge, _ = line.split(";")
+            # print(line)
+
+            # проверка на номер без договора
+            if  auth not in orange_numbers:
+                auth = orange_numbers[0]
+
+            # Местные вызовы
+            if svc == 'L':
+                if auth not in local_file:
+                    local_file[auth] = int(int(seconds)/60) 
+                else:
+                    local_file[auth] = local_file.get(auth) + int(int(seconds)/60)
+                # count_local += int(int(seconds)/60)
+            
+            # ВЗ вызовы
+            elif svc == 'Z':
+                zone_file.append(f'{auth};{date_f} {time}:00;{terminat};{terminat[:4]};{zone} {country};{(int(seconds)/60)}0;{charge.replace(",",".")}')
+                # print(zone_file)
+                price_zone += float(charge.replace(",","."))
+            
+            # МГ вызовы
+            elif svc == 'C':
+                mg_file.append(f'{auth};{date_f} {time}:00;{terminat};{terminat[:4]};{zone} {country};{(int(seconds)/60)}0;{charge.replace(",",".")}')
+                # print(mg_file)
+                price_mg += float(charge.replace(",","."))
