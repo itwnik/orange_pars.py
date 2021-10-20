@@ -130,3 +130,4 @@ if __name__ == "__main__":
         print(f'Отсутствует файл {exp.filename}')
     except SystemExit:
         print(f'Не указано имя файла в качестве параметра!')
+    print('test')
