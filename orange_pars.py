@@ -18,14 +18,16 @@
 
 
 import os
+# import sys
+import argparse
 import calendar
 import datetime as dt
 from itertools import islice
 
 
 FILE_NUMBER_DOGOVOR = "num.txt"
-IN_PATH = './in'
 OUT_PATH = './out'
+
 
 local_file = {}
 zone_file = []
@@ -41,11 +43,18 @@ def load_orange_numbers(file_name):
     return orange_numbers
 
 
-def fiend_start_file():
-    for root , _, files in os.walk('./in'):
-        if '.csv' in files[0]:
-            sorce_file = os.path.normpath(os.path.join(root, files[0]))
-    return sorce_file
+def createParser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument ('-f', required=True)
+    # parser.add_argument ('-m', '--month', type=int)
+    return parser
+
+
+# def fiend_start_file():
+#     for root , _, files in os.walk('./in'):
+#         if '.csv' in files[0]:
+#             sorce_file = os.path.normpath(os.path.join(root, files[0]))
+#     return sorce_file
 
 
 def parsing_sorce_file(sorce_file, orange_numbers):
@@ -106,11 +115,18 @@ def out_file(numbers):
     with open(os.path.join(OUT_PATH, "price.txt"), mode='w', encoding='utf-8') as file:
             file.write(f'МС - 9 240 руб.\nВЗ - {round(price_zone, 2)} руб. \nМГ - {round(price_mg, 2)} руб. \n')
 
-if __name__ == "main":
+
+if __name__ == "__main__":
     try:
         orange_numbers = load_orange_numbers(FILE_NUMBER_DOGOVOR)
-        sorce_file = fiend_start_file()
+        parser = createParser()
+        namespace = parser.parse_args()
+        sorce_file = namespace.f
+        # sorce_file = fiend_start_file()
         parsing_sorce_file(sorce_file, orange_numbers)
         out_file(orange_numbers)
-    except FileNotFoundError:
-        print('Отсутствует файл с номерами из договора "num.txt"')
+        print("Done!")
+    except FileNotFoundError as exp:
+        print(f'Отсутствует файл {exp.filename}')
+    except SystemExit:
+        print(f'Не указано имя файла в качестве параметра!')
