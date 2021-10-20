@@ -38,7 +38,6 @@ def load_orange_numbers(file_name):
     with open(file_name, mode='r', encoding='utf-8') as sorce_file:
         for line in sorce_file:
             orange_numbers.append(line[:10])
-        # print(orange_numbers)
     return orange_numbers
 
 
@@ -46,7 +45,6 @@ def fiend_start_file():
     for root , _, files in os.walk('./in'):
         if '.csv' in files[0]:
             sorce_file = os.path.normpath(os.path.join(root, files[0]))
-            # print(sorce_file)
     return sorce_file
 
 
@@ -69,16 +67,14 @@ def parsing_sorce_file(sorce_file, orange_numbers):
             # ВЗ вызовы
             elif svc == 'Z':
                 zone_file.append(f'{auth};{date_f} {time_f[:6]}:00;{terminat};{terminat[:4]};{zone} {country};{(int(seconds)/60)}0;{float(charge.replace(",",".")):.2f}\n')
-                # print(zone_file)
                 price_zone += round(float(charge.replace(",",".")),2)
                 count_zone += int(int(seconds)/60)
             # МГ вызовы
             elif svc == 'C':
                 mg_file.append(f'{auth};{date_f} {time_f[:6]}:00;{terminat};{terminat[:4]};{zone} {country};{(int(seconds)/60)}0;{float(charge.replace(",",".")):.2f}\n')
-                # print(mg_file)
                 price_mg += round(float(charge.replace(",",".")), 2)
                 count_mg += int(int(seconds)/60)
-        # print(count_local, count_zone, count_mg)
+
 
 def format_date_local_call():
     end_past_month_day = calendar.monthrange(dt.date.today().year, dt.date.today().month-1)[1]
@@ -89,11 +85,10 @@ def format_date_local_call():
     period = f'{start:%d}.{start:%m}.{start:%Y} - {end:%d}.{end:%m}.{end:%Y}'
     return period
 
+
 def out_file(numbers):
-    # os.path.join(OUT_PATH, )
     # Местные вызовы
     period = format_date_local_call()
-    print(period)
     with open(os.path.join(OUT_PATH, "ms.txt"), mode='w', encoding='utf-8') as file:
         for number in numbers:
             file.write(f'{period}|2|777|{number}|Абонентска плата|штука|1|280.0000|1\n')
@@ -111,8 +106,11 @@ def out_file(numbers):
     with open(os.path.join(OUT_PATH, "price.txt"), mode='w', encoding='utf-8') as file:
             file.write(f'МС - 9 240 руб.\nВЗ - {round(price_zone, 2)} руб. \nМГ - {round(price_mg, 2)} руб. \n')
 
-
-orange_numbers = load_orange_numbers(FILE_NUMBER_DOGOVOR)
-sorce_file = fiend_start_file()
-parsing_sorce_file(sorce_file, orange_numbers)
-out_file(orange_numbers)
+if __name__ == "main":
+    try:
+        orange_numbers = load_orange_numbers(FILE_NUMBER_DOGOVOR)
+        sorce_file = fiend_start_file()
+        parsing_sorce_file(sorce_file, orange_numbers)
+        out_file(orange_numbers)
+    except FileNotFoundError:
+        print('Отсутствует файл с номерами из договора "num.txt"')
