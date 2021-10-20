@@ -18,7 +18,6 @@
 
 
 import os
-# import sys
 import argparse
 import calendar
 import datetime as dt
@@ -48,13 +47,6 @@ def createParser():
     parser.add_argument ('-f', required=True)
     # parser.add_argument ('-m', '--month', type=int)
     return parser
-
-
-# def fiend_start_file():
-#     for root , _, files in os.walk('./in'):
-#         if '.csv' in files[0]:
-#             sorce_file = os.path.normpath(os.path.join(root, files[0]))
-#     return sorce_file
 
 
 def parsing_sorce_file(sorce_file, orange_numbers):
@@ -122,7 +114,6 @@ if __name__ == "__main__":
         parser = createParser()
         namespace = parser.parse_args()
         sorce_file = namespace.f
-        # sorce_file = fiend_start_file()
         parsing_sorce_file(sorce_file, orange_numbers)
         out_file(orange_numbers)
         print("Done!")
@@ -130,4 +121,3 @@ if __name__ == "__main__":
         print(f'Отсутствует файл {exp.filename}')
     except SystemExit:
         print(f'Не указано имя файла в качестве параметра!')
-    print('test')
